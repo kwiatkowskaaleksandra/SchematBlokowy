@@ -1,0 +1,873 @@
+﻿@model SchematBlokowyIndexVM
+@{ ViewBag.Title = "SchematBlokowy";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<div class="row">
+    <div class="col-xs-12 header">
+        <div class="header-title">
+            <img src="~/Content/images/project-diagram-solid.svg" style="width: 45px; height: 100%; margin-right: 10px;" />
+            <h2>Utwórz schemat blokowy</h2>
+            <img src="~/Content/images/question-circle-regular.svg" class="question-mark" data-toggle="modal" data-target="#myModal" />
+        </div>
+        <div>
+            <button id="resetBtnId" onclick="resetEditor()" class="button-reset" type="button">
+                <svg class="bi bi-arrow-clockwise" width="33px" height="33px" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M3.17 6.706a5 5 0 0 1 7.103-3.16.5.5 0 1 0 .454-.892A6 6 0 1 0 13.455 5.5a.5.5 0 0 0-.91.417 5 5 0 1 1-9.375.789z" />
+                    <path fill-rule="evenodd" d="M8.147.146a.5.5 0 0 1 .707 0l2.5 2.5a.5.5 0 0 1 0 .708l-2.5 2.5a.5.5 0 1 1-.707-.708L10.293 3 8.147.854a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Generuj <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" onclick="convertEditor(2,'plik.c')">@CodeLanguageEnum.C.GetDisplayName()</a></li>
+                    <li><a href="#" onclick="convertEditor(1,'plik.cpp')">@CodeLanguageEnum.CPlusPlus.GetDisplayName()</a></li>
+                    <li><a href="#" onclick="convertEditor(0,'plik.cs')">@CodeLanguageEnum.CSharp.GetDisplayName()</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="wrapper">
+            <div class="dock" style="width: 300px; flex-shrink: 0;"></div>
+            <div id="editor" style="overflow: hidden; touch-action: none;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 alerts">
+        <div style="width: 800px;">
+            <div class="alert alert-warning alert-dismissible" role="alert" style="display: none;" id="warningAlertId">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Ostrzeżenie!</strong><span style="margin-left: 5px;" id="warningAlertTextId">Utworzony schemat może zawierać błędy.</span>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible" role="alert" style="display: none;" id="errorAlertId">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Błąd!</strong><span style="margin-left: 5px;" id="errorAlertTextId">Utworzony schemat jest niepoprawny.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Pomoc</h4>
+            </div>
+            <div class="modal-body">
+                <ul style="font-size: 18px;">
+                    <li>Narzędzie składa się z dwóch elementów przybornika (po lewej stronie) oraz obszaru roboczego (po prawej stronie).</li>
+                    <li>Do tworzenia schematu blokowego można wykorzystać przybornik lub menu znajdujące się pod prawym przyciskiem myszy w obszarze roboczym.</li>
+                    <li>Podczas tworzenia schematu obowiązuje jawna deklaracja zmiennych. Oznacza to przypisanie do zmiennych ich typu (np. int x).</li>
+                    <li>Kolejne operację w pojedynczym bloku należy oddzielać znakiem przecinka.</li>
+                    <li>Zaleca się stosować rozwiązania, pozwalające na uniknięcie dużego zagnieżdzenia bloków warunkowych.</li>
+                    <li>Blok warunkowy powinien jedynie zawierać sprecyzowane wyrażenie warunkowe.</li>
+                    <li>Podczas tworzenia pętli for należy użyć bloku początku i końca, gdzie w bloku początkowym wpiszemy warunek oddzielony ; (np. int i=10;i>0;--i)</li>
+                    <li>Podczas tworzenia pętli while należy użyć bloku początku i końca, gdzie w bloku początkowym wpiszemy warunek (np. a>10)</li>
+                    <li>Formatowanie bloków wyjściowych jest zgodne z następującym schematem: "Przykładowy tekst " + zmienna1 + zmienna2 ...</li>
+                    <li>Każdy tworzony schemat powinien zaczynać sie blokiem "Start" oraz kończyć blokiem "Koniec".</li>
+                    <li>Łączenie elementów odbywa się poprzez przeciągnięcie przy pomocy myszy linii łączącej pomiędzy wybranymi elementami.</li>
+                    <li>Przytrzymanie lewego przycisku myszy w obszarze roboczym pozwala na dowolne przesuwanie tworzonego schematu.</li>
+                    <li>Przy pomocy kółka myszy można wykonać przybliżenie schematu.</li>
+                    <li>W celu wyczyszczenia obszaru roboczego należy użyć przycisku resetu znajdującego się tuż obok przycisku "Generuj". Spowoduje to usunięcie dotychczasowych rezultatów prac.</li>
+                    <li>Po utworzeniu schematu należy użyć przycisku "Generuj" w celu przetworzenia schematu blokowego, wybrać docelowy język dla kodu źródłowego programu, który następnie można pobrać klikając w "Pobierz plik" znajdujący się w lewym dolnym rogu.</li>
+                    <li>Aby pobrać schemat blokowy z edytora należy użyć przycisku "Pobierz JSON", który uaktywni się w momencie wygenerowania kodu.</li>
+                    <li>Do wczytania pliku do edytora należy wybrać plik w polu "Wybierz plik" w rozszerzeniu .json.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resetowanie obszaru roboczego</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz wyczyścić obszar roboczy? Wszystkie dotychczasowe wyniki prac zostaną utracone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+                <button type="button" onclick="reset()" class="btn btn-danger">Resetuj</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="result">
+    <p> <a href="" id="a">Pobierz plik</a></p>
+</div>
+
+<div id="container"></div>
+
+@*Utils*@
+<script>
+    function resetEditor() {
+        debugger;
+        if (editor.nodes.length != 0)
+            $('#resetModal').modal("show");
+        else
+            editor.clear();
+    }
+
+    function reset() {
+        editor.clear();
+        $('#resetModal').modal("hide");
+    }
+
+    function showAlert(name) {
+       $("#" + name).fadeTo(10000, 1000).slideUp(1000, function () {
+                            $("#successToast").slideUp(1000);
+                        });
+    }
+
+    function Block(type) {
+        generateBlock(type);
+    }
+
+    function convertEditor(type, rodz) {
+        var existStart = false;
+        var tooMuchStart = false;
+        var existEnd = false;
+        var tooMuchEnd = false;
+        var existForStart = false;
+        var existForEnd = false;
+        var existWhileStart = false;
+        var existWhileEnd = false;
+
+        for (var i = 0; i < editor.nodes.length; i++) {
+            if (editor.nodes[i].name == "Start" && existStart == false)
+                existStart = true;
+            else if (editor.nodes[i].name == "Start" && existStart == true)
+                tooMuchStart = true;
+            else if (editor.nodes[i].name == "Koniec" && existEnd == false)
+                existEnd = true;
+            else if (editor.nodes[i].name == "Koniec" && existEnd == true)
+                tooMuchEnd = true;
+
+            if (editor.nodes[i].name == "Blok petli for - poczatek" && existForStart == false)
+                existForStart = true;
+            else if (editor.nodes[i].name == "Blok petli for - koniec" && existForEnd == false)
+                existForEnd = true;
+
+            if (editor.nodes[i].name == "Blok petli while - poczatek" && existWhileStart == false)
+                existWhileStart = true;
+            else if (editor.nodes[i].name == "Blok petli while - koniec" && existWhileEnd == false)
+                existWhileEnd = true;
+        }
+
+
+        if (editor.nodes.length == 0) {
+            $("#warningAlertTextId").text("Obszar roboczy jest pusty.");
+            showAlert("warningAlertId");
+        }
+        else if (existStart == false) {
+            $("#errorAlertTextId").text('Schemat blokowy nie zawiera bloku "Start".');
+            showAlert("errorAlertId");
+        }
+        else if (existEnd == false) {
+            $("#errorAlertTextId").text('Schemat blokowy nie zawiera bloku "Koniec".');
+            showAlert("errorAlertId");
+        }
+        else if (tooMuchStart == true) {
+            $("#errorAlertTextId").text('Schemat blokowy zawiera zbyt wiele bloków "Start".');
+            showAlert("errorAlertId");
+        }
+        else if (tooMuchEnd == true) {
+            $("#warningAlertTextId").text('Schemat blokowy zawiera zbyt wiele bloków "Koniec".');
+            showAlert("warningAlertId");
+        }
+        else if (editor.nodes.length == 2 && existStart && existEnd) {
+            $("#warningAlertTextId").text('Schemat blokowy nie zawiera logiki programu. Wygenerowany kod będzie zawierał tylko strukturę programu.');
+            showAlert("warningAlertId");
+            generateCode(type,rodz);
+        }
+        else if (existForStart == true && existForEnd == false) {
+            $("#warningAlertTextId").text('Schemat blokowy nie zawiera bloku konczacego petle for.');
+            showAlert("warningAlertId");
+        }
+        else if (existForStart == false && existForEnd == true ){
+            $("#warningAlertTextId").text('Schemat blokowy nie zawiera bloku poczatkujacego petle for.');
+            showAlert("warningAlertId");
+        }
+        else if (existWhileStart == true && existWhileEnd == false) {
+            $("#warningAlertTextId").text('Schemat blokowy nie zawiera bloku konczacego petle while.');
+            showAlert("warningAlertId");
+        }
+        else if (existWhileStart == false && existWhileEnd == true) {
+            $("#warningAlertTextId").text('Schemat blokowy nie zawiera bloku poczatkujacego petle while.');
+            showAlert("warningAlertId");
+        }
+
+        else if (editor.nodes.length > 2 && existStart && existEnd && tooMuchStart == false && tooMuchEnd == false) {
+             generateCode(type, rodz);
+        }
+    }
+
+    function generateCode(type,rodz) {
+        var json = editor.toJSON();
+            $.ajax({
+                url: '@Url.Action("Convert", "SchematBlokowy")',
+                type: "post",
+                data: {
+                    model: JSON.stringify(json),
+                    type: type,
+                    rodz: rodz
+                },
+                success:  function download(text, name, type,data) {
+                    var a = document.getElementById("a");
+                    var file = new Blob([text], { type: type });
+                    a.href = URL.createObjectURL(file);
+                    a.download = name +rodz ;
+                    $(".result").html(data);
+                }
+            });
+
+        $(document).ready(function () {
+            var json = editor.toJSON();
+            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json, null, 2));
+
+            var a = document.createElement('a');
+            a.href = 'data:' + data;
+            a.download = 'data.json';
+            a.innerHTML = 'Pobierz JSON';
+
+            var container = document.getElementById('container');
+            container.appendChild(a);
+            console.log(editor.nodes);
+        })
+    }
+</script>
+
+
+<input type="file" id="file-selector" value="C:\\fakepath\\SchematBlokowy\SchematBlokowy\SchematBlokowy\\">
+<script>
+    const fileSelector = document.getElementById('file-selector');
+    fileSelector.addEventListener('change', (event) => {
+        var text = fileSelector.value;
+        var newText = text.replaceAll("C:\\fakepath\\", "");
+        var sample_data = '';
+        var path = "http://localhost:58605/" + newText;
+        $.getJSON(path, function (data) {
+            sample_data = data;
+            editor.fromJSON(sample_data); 
+        });
+    });
+</script>
+
+
+
+@*Editor*@
+<script>
+    var numSocket = new Rete.Socket('Number value');
+    var strSocket = new Rete.Socket("String");
+
+    const JsRenderPlugin = {
+        install(editor, params = {}) {
+            editor.on("rendercontrol", ({ el, control }) => {
+                if (control.render && control.render !== "js") return;
+
+                control.handler(el, editor);
+            });
+        }
+    };
+
+
+    class NumControl extends Rete.Control {
+        constructor(key) {
+            super(key);
+            this.render = "js";
+            this.key = key;
+        }
+
+        handler(el, editor) {
+            var input = document.createElement("textarea");
+            input.setAttribute("style", "height:50px");
+            el.appendChild(input);
+
+            var text = this.getData(this.key) || "";
+
+            input.value = text;
+            this.putData(this.key, text);
+            input.addEventListener("change", () => {
+                this.putData(this.key, input.value);
+            });
+        }
+    }
+
+    class InComponent extends Rete.Component {
+
+        constructor() {
+            super("Blok wprowadzania danych");
+        }
+
+        builder(node) {
+            var out1 = new Rete.Output('num', "", numSocket);
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            return node.addControl(new NumControl("text")).addOutput(out1).addInput(inp1);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+        }
+    }
+
+    class OperationComponent extends Rete.Component {
+        constructor() {
+            super("Blok operacji");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            var out = new Rete.Output('num', "", numSocket);
+
+            return node
+                .addInput(inp1)
+                .addControl(new NumControl('text'))
+                .addOutput(out);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+        }
+    }
+
+    class ForComponentStart extends Rete.Component {
+        constructor() {
+            super("Blok petli for - poczatek");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            var out = new Rete.Output('num', "", numSocket);
+
+            return node
+                .addInput(inp1)
+                .addControl(new NumControl('text'))
+
+                .addOutput(out);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+        }
+    }
+
+    class ForComponentEnd extends Rete.Component {
+        constructor() {
+            super("Blok petli for - koniec");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            var out = new Rete.Output('num', "", numSocket);
+
+            return node
+                .addInput(inp1)
+
+
+                .addOutput(out);
+        }
+
+        worker(node, inputs, outputs) {
+            return {};
+        }
+    }
+
+    class WhileComponentStart extends Rete.Component {
+        constructor() {
+            super("Blok petli while - poczatek");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            var out = new Rete.Output('num', "", numSocket);
+
+            return node
+                .addInput(inp1)
+                .addControl(new NumControl('text'))
+
+                .addOutput(out);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+        }
+    }
+
+    class WhileComponentEnd extends Rete.Component {
+        constructor() {
+            super("Blok petli while - koniec");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+            var out = new Rete.Output('num', "", numSocket);
+
+            return node
+                .addInput(inp1)
+
+
+                .addOutput(out);
+        }
+
+        worker(node, inputs, outputs) {
+            return {};
+        }
+    }
+
+    class IfComponent extends Rete.Component {
+        constructor() {
+            super("Blok warunku");
+        }
+
+        builder(node) {
+            var inp1 = new Rete.Input('num', "", numSocket, true);
+
+            var out1 = new Rete.Output('out1', "Tak", numSocket);
+
+            var out2 = new Rete.Output('out2', "Nie", numSocket);
+
+            return node
+                .addInput(inp1)
+                .addControl(new NumControl('text'))
+                .addOutput(out1)
+                .addOutput(out2);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+        }
+    }
+
+    class OutComponent extends Rete.Component {
+
+        constructor() {
+            super("Blok wypisywania danych");
+        }
+
+        builder(node) {
+            var out = new Rete.Output('num', "", numSocket);
+            var in1 = new Rete.Input('num', "", numSocket, true);
+
+            return node.addControl(new NumControl('text')).addOutput(out).addInput(in1);
+        }
+
+        worker(node, inputs, outputs) {
+            return { text: node.data.text };
+
+        }
+    }
+
+    class EndComponent extends Rete.Component {
+
+        constructor() {
+            super("Koniec");
+        }
+
+        builder(node) {
+            var in1 = new Rete.Input('num', "", numSocket, true);
+
+            return node.addInput(in1);
+        }
+
+        worker(node, inputs, outputs) {
+            return {};
+
+        }
+    }
+
+    class StartComponent extends Rete.Component {
+
+        constructor() {
+            super("Start");
+        }
+
+        builder(node) {
+            var out1 = new Rete.Output('num', "", numSocket);
+
+            return node.addOutput(out1);
+        }
+
+        worker(node, inputs, outputs) {
+            return {};
+        }
+    }
+
+    var components = [
+        new StartComponent(),
+        new InComponent(),
+        new IfComponent(),
+        new OperationComponent(),
+        new OutComponent(),
+        new EndComponent(),
+        new ForComponentStart(),
+        new ForComponentEnd(),
+        new WhileComponentStart(),
+        new WhileComponentEnd()
+    ];
+
+    var container = document.getElementById("editor");
+    var editor = new Rete.NodeEditor("demo@0.1.0", container);
+    editor.use(VueRenderPlugin.default);
+    editor.use(ConnectionPlugin.default);
+    editor.use(JsRenderPlugin);
+    editor.use(ConnectionPathPlugin, {
+        arrow: { color: 'steelblue', marker: 'M-5,-10 L-5,10 L20,0 z' }
+    });
+
+
+    editor.use(DockPlugin.default, {
+        container: document.querySelector('.dock'),
+        itemClass: 'dock-item',
+        plugins: [VueRenderPlugin.default]
+    });
+
+    var engine = new Rete.Engine("demo@0.1.0");
+
+    components.map(c => {
+        editor.register(c);
+        engine.register(c);
+    });
+
+    editor.use(ContextMenuPlugin.default);
+
+    editor
+        .fromJSON({
+
+        })
+        .then(() => {
+            editor.on("error", err => {
+                alertify.error(err.message);
+            });
+
+            editor.on(
+                "process connectioncreated connectionremoved nodecreated",
+                async function () {
+                    if (engine.silent) return;
+                    onMessageTask = [];
+                    console.log("process");
+                    await engine.abort();
+                    await engine.process(editor.toJSON());
+                }
+            );
+
+            editor.trigger("process");
+            editor.view.resize();
+            AreaPlugin.zoomAt(editor);
+        });
+
+</script>
+
+<style>
+
+    .dock {
+        border: 3px solid #e0b1d1;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        padding: 10px;
+        height: 800px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: scroll;
+        overflow-x: hidden;
+    }
+
+    .title {
+        padding: 10px !important;
+        top: 10px;
+        position: inherit;
+    }
+
+    .dock-item {
+        border: 3px solid white;
+        display: inline-block;
+        vertical-align: top;
+        transform: scale(0.7);
+        line-height: 0;
+        opacity: 1.0;
+    }
+
+        .dock-item:hover {
+            opacity: 1.0;
+        }
+
+    #editor {
+        border: 3px solid #e0b1d1;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        height: 800px !important;
+        flex-grow: 1;
+        margin-left: 30px;
+    }
+
+    #info {
+        border: 3px solid #e0b1d1;
+        padding: 10px;
+        font-size: 15px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        height: 200px !important;
+        width: 100% !important;
+    }
+
+    select, input {
+        width: 100%;
+        border-radius: 30px;
+        background-color: white;
+        padding: 2px 6px;
+        border: 10px solid white;
+        font-size: 110%;
+        width: 170px;
+    }
+
+    button.btn.btn-success.dropdown-toggle {
+        color: white;
+        background-color: #660033;
+        border: none;
+        display: inline-block;
+        padding: 20px 28px;
+        vertical-align: middle;
+        overflow: hidden;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        white-space: nowrap;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+        button.btn.btn-success.dropdown-toggle:focus {
+            background-color: #660033;
+        }
+
+    select, input {
+        width: 20%;
+    }
+
+        input[type="file" i] {
+            background-color: initial;
+            cursor: default;
+            align-items: baseline;
+            color: inherit;
+            text-overflow: ellipsis;
+            white-space: pre;
+            text-align: start !important;
+            padding: initial;
+            border: initial;
+            border-color: initial;
+            overflow: hidden !important;
+            border-radius: initial;
+            width: 15%;
+        }
+
+    .button-reset {
+        color: #333 !important;
+        background-color: pink !important;
+        border: none;
+        display: inline-block;
+        vertical-align: middle;
+        overflow: hidden;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        white-space: nowrap;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 18px;
+        width: 65px;
+        height: 65px;
+        margin-right: 7px;
+        opacity: 0.5;
+    }
+
+        .button-reset:hover {
+            opacity: 1;
+        }
+
+    .node.start {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 100%;
+    }
+
+        .node.start:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-wprowadzania-danych {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        transform: skewX( -25deg );
+        border-radius: unset;
+    }
+
+        .node.blok-wprowadzania-danych:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-warunku {
+        background: pink;
+        border: 3px solid #e0b1d1;
+    }
+
+        .node.blok-warunku:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-operacji {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: unset;
+    }
+
+        .node.blok-operacji:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-wypisywania-danych {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        transform: skewX( -25deg );
+        border-radius: unset;
+    }
+
+        .node.blok-wypisywania-danych:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.koniec {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 100%;
+    }
+
+        .node.koniec:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-petli-for---poczatek {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 10px;
+    }
+
+        .node.blok-petli-for---poczatek:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-petli-for---koniec {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 10px;
+    }
+
+        .node.blok-petli-for---koniec:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-petli-while---poczatek {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 10px;
+    }
+
+        .node.blok-petli-while---poczatek:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .node.blok-petli-while---koniec {
+        background: pink;
+        border: 3px solid #e0b1d1;
+        border-radius: 10px;
+    }
+
+        .node.blok-petli-while---koniec:hover {
+            background: pink;
+            border: 3px solid #e0b1d1;
+        }
+
+    .socket.output.number-value {
+        background: steelblue;
+    }
+
+    .socket.input.number-value {
+        background: steelblue;
+    }
+
+    .node.selected.start {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.koniec {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-operacji {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-warunku {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-wprowadzania-danych {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-wypisywania-danych {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-petli-for---poczatek {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-petli-for---koniec {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-petli-while---poczatek {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+
+    .node.selected.blok-petli-while---koniec {
+        background: #D8BFD8;
+        border: 3px solid #e0b1d1;
+    }
+</style>

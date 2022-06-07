@@ -1,0 +1,177 @@
+{
+  "id": "demo@0.1.0",
+  "nodes": {
+    "11": {
+      "id": 11,
+      "data": {},
+      "inputs": {},
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 12,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        121,
+        76
+      ],
+      "name": "Start"
+    },
+    "12": {
+      "id": 12,
+      "data": {
+        "text": "int a=9;"
+      },
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 11,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 14,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        324.06624,
+        143.024768
+      ],
+      "name": "Blok wprowadzania danych"
+    },
+    "13": {
+      "id": 13,
+      "data": {},
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 16,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {},
+      "position": [
+        1546.1110467782992,
+        211.00000145842645
+      ],
+      "name": "Koniec"
+    },
+    "14": {
+      "id": 14,
+      "data": {
+        "text": "int( i=0;i<10;i++)"
+      },
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 12,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 15,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        685.9982402111747,
+        187.03519577650684
+      ],
+      "name": "Blok petli for - poczatek"
+    },
+    "15": {
+      "id": 15,
+      "data": {
+        "text": "a++;"
+      },
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 14,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 16,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        1044.8888821072048,
+        217.33333163791232
+      ],
+      "name": "Blok operacji"
+    },
+    "16": {
+      "id": 16,
+      "data": {},
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 15,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 13,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        1282.6666598849827,
+        149.55555386013455
+      ],
+      "name": "Blok petli for - koniec"
+    }
+  }
+}

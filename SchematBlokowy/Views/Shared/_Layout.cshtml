@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchematBlokowy</title>
+    <link rel="shortcut icon" href="~/Content/images/project-diagram-solid.svg" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Scripts/jquery")
+    @Scripts.Render("~/bundles/jqueryBase64")
+
+    <script src="https://d3js.org/d3-path.v1.min.js"></script>
+    <script src="https://d3js.org/d3-shape.v1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete@1.4.3-rc.1/build/rete.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.3.5/build/vue-render-plugin.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.8.3-rc.1/build/connection-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alight@0.14.1/alight.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+    <script src="~/Scripts/context-menu-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.1/build/area-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-comment-plugin@0.3.0/build/comment-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-history-plugin@0.1.0/build/history-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-connection-path-plugin@0.2.0/build/connection-path-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-dock-plugin@0.2.0/build/dock-plugin.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-connection-mastery-plugin@0.1.0/build/connection-mastery-plugin.min.js"></script>
+</head>
+<body>
+    <div style="padding: 10px;" class="container-fluid">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            $(document).ajaxError(function (event, request, settings, thrownError) {});
+        });
+
+        $(function () {
+            var transport = ['webSockets', 'serverSentEvents', 'longPolling', 'foreverFrame'];
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            if (isChrome) {
+                transport = ['serverSentEvents', 'longPolling', 'foreverFrame'];
+            }
+        });
+
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+﻿.row {
+    width: 100%;
+    height: auto;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+
+.node .control input, .node .input-control input {
+    width: 140px;
+}
+
+select, input {
+    width: 100%;
+    border-radius: 30px;
+    background-color: white;
+    padding: 2px 6px;
+    border: 1px solid white;
+    font-size: 110%;
+    width: 170px;
+}
+
+.container {
+    flex: 1;
+    overflow: hidden;
+}
+
+.button {
+    color: #660033 !important;
+    background-color: #660033 !important;
+    border: none;
+    display: inline-block;
+    padding: 20px 28px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.btn-success {
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    width: 124px;
+    height: 65px;
+}
+
+.dropdown-menu {
+    min-width: 124px !important;
+    width: 124px;
+}
+
+.button-reset {
+    color: #333 !important;
+    background-color: #ccc !important;
+    border: none;
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 18px;
+    width: 65px;
+    height: 65px;
+    margin-right: 7px;
+    opacity: 0.5;
+}
+
+    .button-reset:hover {
+        opacity: 1;
+    }
+
+#editor {
+    border: 2px solid #8b93db;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    height: 650px !important;
+    flex-grow: 1;
+    margin-left: 30px;
+}
+
+#info {
+    border: 2px solid #8b93db;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    height: 200px !important;
+    width: 100% !important;
+}
+
+.wrapper {
+    display: flex
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+}
+
+.question-mark {
+    cursor: pointer;
+    width: 25px;
+    height: 100%;
+    margin-left: 10px;
+    margin-top: 10px;
+    opacity: 0.5;
+}
+
+.question-mark:hover {
+    opacity: 1;
+}
+
+.modal-dialog {
+    width: 800px !important;
+}
+
+.alerts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}

@@ -1,0 +1,80 @@
+{
+  "id": "demo@0.1.0",
+  "nodes": {
+    "11": {
+      "id": 11,
+      "data": {},
+      "inputs": {},
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 12,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "name": "Start"
+    },
+    "12": {
+      "id": 12,
+      "data": {
+        "text": ""
+      },
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 11,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 13,
+              "input": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "position": [
+        235.86406399999998,
+        85.950464
+      ],
+      "name": "Blok wprowadzania danych"
+    },
+    "13": {
+      "id": 13,
+      "data": {},
+      "inputs": {
+        "num": {
+          "connections": [
+            {
+              "node": 12,
+              "output": "num",
+              "data": {}
+            }
+          ]
+        }
+      },
+      "outputs": {},
+      "position": [
+        614,
+        93
+      ],
+      "name": "Koniec"
+    }
+  }
+}
